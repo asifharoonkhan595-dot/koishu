@@ -74,15 +74,29 @@ export default function Home() {
               playsInline
             />
             {/* The download attribute allows saving directly to device */}
-            <a 
-              href={videoUrl} 
+            <button 
+              onClick={async () => {
+                try {
+                  const response = await fetch(videoUrl);
+                  const blob = await response.blob();
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.style.display = 'none';
+                  a.href = url;
+                  a.download = 'kuaishou_video.mp4';
+                  document.body.appendChild(a);
+                  a.click();
+                  window.URL.revokeObjectURL(url);
+                  document.body.removeChild(a);
+                } catch (err) {
+                  console.error("Direct download failed, falling back to new tab", err);
+                  window.open(videoUrl, '_blank');
+                }
+              }}
               className="download-link" 
-              download="kuaishou_video.mp4"
-              target="_blank"
-              rel="noopener noreferrer"
             >
               Save to Device
-            </a>
+            </button>
           </div>
         )}
       </div>
